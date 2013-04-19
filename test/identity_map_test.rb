@@ -51,4 +51,18 @@ scope do
 
     assert_equal 2, comments.map(&:object_id).uniq.size
   end
+
+  test "Model#reference - identity map disabled" do
+    assert Comment[1].post.object_id != Comment[2].post.object_id
+  end
+
+  test "Model#reference - identity map enabled" do
+    posts = Ohm::Model.identity_map { [Comment[1].post, Comment[2].post] }
+
+    assert_equal 1, posts.map(&:object_id).uniq.size
+
+    orphan = Comment.create(body: "No post.")
+
+    assert_equal nil, orphan.post
+  end
 end
