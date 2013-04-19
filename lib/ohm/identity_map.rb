@@ -1,7 +1,7 @@
 require "ohm"
 
 module Ohm::IdentityMap
-  VERSION = "0.1.0"
+  VERSION = "0.1.1"
 
   def self.included(model)
     model.extend(Macros)
