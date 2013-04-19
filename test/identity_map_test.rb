@@ -65,4 +65,14 @@ scope do
 
     assert_equal nil, orphan.post
   end
+
+  test "does not confuse models" do
+    models = Ohm::Model.identity_map { [Comment[1], Post[1]] }
+
+    assert_equal 2, models.map(&:object_id).uniq.size
+
+    models = Ohm::Model.identity_map { Comment.fetch([1]) + Post.fetch([1]) }
+
+    assert_equal 2, models.map(&:object_id).uniq.size
+  end
 end

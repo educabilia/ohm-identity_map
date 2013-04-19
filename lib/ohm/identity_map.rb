@@ -11,7 +11,9 @@ module Ohm::IdentityMap
 
       def [](id)
         if map = Thread.current[:_ohm_identity_map]
-          map.fetch(id) { map[id] = original_loader(id) }
+          key = self.key[id]
+
+          map.fetch(key) { map.store(key, original_loader(id)) }
         else
           original_loader(id)
         end
@@ -24,7 +26,7 @@ module Ohm::IdentityMap
           missing_ids, missing_indices = [], []
 
           mapped = ids.map.with_index do |id, index|
-            map.fetch(id) do
+            map.fetch(self.key[id]) do
               missing_ids << id
               missing_indices << index
               nil
@@ -33,7 +35,7 @@ module Ohm::IdentityMap
 
           original_fetch(missing_ids).each.with_index do |instance, index|
             mapped[missing_indices[index]] = instance
-            map.store(missing_ids[index], instance)
+            map.store(self.key[missing_ids[index]], instance)
           end
 
           mapped
